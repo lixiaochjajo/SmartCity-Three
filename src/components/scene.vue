@@ -5,23 +5,18 @@
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
-import { RenderPass } from "three/examples/jsm/postprocessing/RenderPass";
-import { EffectComposer } from "three/examples/jsm/postprocessing/EffectComposer";
-import { UnrealBloomPass } from "three/examples/jsm/postprocessing/UnrealBloomPass";
+
 let scene; //场景
 let camera; //相机
 let renderer; //创建渲染器
 // eslint-disable-next-line no-unused-vars
-let controls; //控制器
-let dataState = 1; //控制着色器闪烁
-let composer; //后处理
+let controls; //后处理
 export default {
   mounted() {
     this.init();
     this.createControls();
 
     this.addGLTF();
-    this.addRenderPass();
     this.render();
   },
   methods: {
@@ -49,118 +44,103 @@ export default {
       point.position.set(600, 900, 600); // 点光源位置
       scene.add(point); // 点光源添加到场景中
       // 环境光
-      const ambient = new THREE.AmbientLight(0x888888);
+      const ambient = new THREE.AmbientLight(0x404040, 1);
       scene.add(ambient);
+      scene.background = new THREE.Color("rgb(25, 35, 39)");
     },
     createControls() {
       controls = new OrbitControls(camera, renderer.domElement);
     },
     render() {
-      renderer.autoClear = false;
-      renderer.clear();
-      renderer.clearDepth();
-      camera.layers.set(0);
-      composer.render(scene, camera);
-      if (
-        composer.passes[1].strength > 1.0 ||
-        composer.passes[1].strength < 0.0
-      ) {
-        dataState = -dataState;
-      }
-      composer.passes[1].strength += 0.01 * dataState;
-      renderer.clearDepth();
-      camera.layers.set(1);
       renderer.render(scene, camera);
       requestAnimationFrame(this.render); // 请求再次执行渲染函数render
     },
-    addGLTF() {
+     addGLTF() {
       const loader = new GLTFLoader();
       loader.load("shanghai.gltf", (gltf) => {
         gltf.scene.traverse((child) => {
           // 设置线框材质
-          const cityArray = ["CITY_UNTRIANGULATED"];
+
           if (child.isMesh) {
             //这个判断模型是楼房还是其他  加载不同的材质
-            if (cityArray.includes(child.name)) {
-              // 建筑物线框模式
+            if (["CITY_UNTRIANGULATED"].includes(child.name)) {
+              // 拿到模型线框的Geometry
               const edges = new THREE.EdgesGeometry(child.geometry, 1);
+              //设置模型的材质
               const lineMaterial = new THREE.LineBasicMaterial({
                 // 线的颜色
                 color: "rgba(38,133,254)",
-                transparent: true,
-                linewidth: 1,
               });
+              //把数据组合起来
               const lineS = new THREE.LineSegments(edges, lineMaterial);
+              //设置数据的位置
               lineS.position.set(
                 child.position.x,
                 child.position.y,
                 child.position.z
               );
-              lineS.layers.set(0);
+              //添加到场景
               scene.add(lineS);
               lineS.rotateX(-Math.PI / 2);
-              // 建筑物线框模式
+              // 模型面材质
               const material = new THREE.MeshPhysicalMaterial({
+                //颜色为
                 color: "rgb(50,170,255)",
+                //金属度
                 metalness: 0.5,
+                //粗糙度
                 roughness: 0.1,
-                side: 2,
-                transmission: 0.5,
+                //透明度
+                transmission: 0.9,
+                //模型是否透明
                 transparent: true,
               });
+              //生成模型对象
               const mesh = new THREE.Mesh(child.geometry, material);
+              //添加到场景
+              scene.add(mesh);
               mesh.position.set(
                 child.position.x,
                 child.position.y,
                 child.position.z
               );
-              mesh.layers.set(1);
-              scene.add(mesh);
+
               mesh.rotateX(-Math.PI / 2);
+            } else if (["ROADS"].includes(child.name)) {
+              //道路
+              const material = new THREE.MeshBasicMaterial({
+                color: "rgb(41,46,76)",
+           
+              });
+              const mesh = new THREE.Mesh(child.geometry, material);
+              mesh.rotateX(-Math.PI / 2);
+              mesh.position.set(
+                child.position.x,
+                child.position.y,
+                child.position.z
+              );
+              scene.add(mesh);
             } else {
-              const material = new THREE.MeshPhysicalMaterial({
-                color: "rgb(50,170,255)",
-                transmission: 0.5,
-                transparent: true,
+              //地面
+              const material = new THREE.MeshBasicMaterial({
+                color: "#040912",
               });
               const mesh = new THREE.Mesh(child.geometry, material);
+              scene.add(mesh);
               mesh.rotateX(-Math.PI / 2);
               mesh.position.set(
                 child.position.x,
                 child.position.y,
                 child.position.z
               );
-              mesh.layers.set(1);
-              scene.add(mesh);
+          
             }
           }
           // 设置线框材质
         });
       });
     },
-    addRenderPass() {
-      // 后处理
-      const renderScene = new RenderPass(scene, camera);
-
-      composer = new EffectComposer(renderer);
-      composer.addPass(renderScene);
-      const params2 = {
-        exposure: 2,
-        bloomStrength: 0.0,
-        bloomThreshold: 0,
-        bloomRadius: 0,
-        debug: false,
-      };
-
-      let bloomPass2 = new UnrealBloomPass(
-        new THREE.Vector2(window.innerWidth, window.innerHeight)
-      );
-      bloomPass2.renderToScreen = true;
-      bloomPass2.threshold = params2.bloomThreshold;
-      bloomPass2.strength = params2.bloomStrength;
-      bloomPass2.radius = params2.bloomRadius;
-      composer.addPass(bloomPass2);
-    },
+  
   },
 };
 </script>
@@ -168,7 +148,7 @@ export default {
 html,
 body,
 #scene {
-  width: 100%;
+  width: 100vw;
   height: 100vh;
   z-index: 2;
   position: absolute;
