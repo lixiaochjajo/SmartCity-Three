@@ -5,23 +5,30 @@
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
-
+import Wall from "./js/wall";
+import RunRing from "./js/RunRing";
 let scene; //场景
 let camera; //相机
 let renderer; //创建渲染器
 // eslint-disable-next-line no-unused-vars
-let controls; //后处理
+let controls; //控制器
 export default {
   mounted() {
     this.init();
     this.createControls();
     this.addGLTF();
     this.render();
+    this.creatWall();
+    // this.creatRing();
   },
   methods: {
     init() {
       //创建场景
       scene = new THREE.Scene();
+      //天空盒
+      
+      const textureCube = new THREE.CubeTextureLoader().load(['1.jpg', '2.jpg', '3.jpg', '4.jpg', '5.jpg', '6.jpg'],);
+      scene.background = textureCube; // 作为背景贴图
       /**
        * 透视投影相机设置
        */
@@ -45,7 +52,7 @@ export default {
       // 环境光
       const ambient = new THREE.AmbientLight(0x404040, 1);
       scene.add(ambient);
-      scene.background = new THREE.Color("rgb(25, 35, 39)");
+
     },
     createControls() {
       controls = new OrbitControls(camera, renderer.domElement);
@@ -153,7 +160,7 @@ void main()
     }
     gl_FragColor=vec4(distColor,1.0);
 }`,
-                    transparent: true,
+        transparent: true,
       });
 
       const city = new THREE.Mesh(object.geometry, shader);
@@ -186,11 +193,40 @@ void main()
     },
     cityanimate() {
       this.height.value += 0.2;
-      if(this.height.value>100)
-      {
-        this.height.value=0.0
+      if (this.height.value > 100) {
+        this.height.value = 0.0;
       }
-    
+    },
+    creatWall() {
+      const wallData = {
+        position: {
+          x: -150,
+          y: 15,
+          z: 100,
+        },
+        speed: 0.5,
+        color: "#efad35",
+        opacity: 0.6,
+        radius: 420,
+        height: 120,
+        renderOrder: 5,
+      };
+
+      let wallMesh = new Wall(wallData);
+      wallMesh.mesh.material.uniforms.time = this.height;
+      scene.add(wallMesh.mesh);
+    },
+    creatRing() {
+      this.RunRing1 = new RunRing({
+        img: "clice.png",
+        scene: scene,
+        speed: 1,
+        radius: 400,
+        position: [
+          [400, 20, 400],
+          [100, 20, 1200],
+        ],
+      });
     },
   },
   data() {
