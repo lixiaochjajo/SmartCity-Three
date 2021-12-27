@@ -5,8 +5,9 @@
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
-import Wall from "./js/wall";
+import Wall from "./js/Wall";
 import RunRing from "./js/RunRing";
+import RunLine from "./js/RunLine";
 let scene; //场景
 let camera; //相机
 let renderer; //创建渲染器
@@ -16,18 +17,26 @@ export default {
   mounted() {
     this.init();
     this.createControls();
-    this.addGLTF();
+    // this.addGLTF();
     this.render();
-    this.creatWall();
+    // this.creatWall();
     // this.creatRing();
+    this.creatRunLine();
   },
   methods: {
     init() {
       //创建场景
       scene = new THREE.Scene();
       //天空盒
-      
-      const textureCube = new THREE.CubeTextureLoader().load(['1.jpg', '2.jpg', '3.jpg', '4.jpg', '5.jpg', '6.jpg'],);
+
+      const textureCube = new THREE.CubeTextureLoader().load([
+        "1.jpg",
+        "2.jpg",
+        "3.jpg",
+        "4.jpg",
+        "5.jpg",
+        "6.jpg",
+      ]);
       scene.background = textureCube; // 作为背景贴图
       /**
        * 透视投影相机设置
@@ -52,7 +61,6 @@ export default {
       // 环境光
       const ambient = new THREE.AmbientLight(0x404040, 1);
       scene.add(ambient);
-
     },
     createControls() {
       controls = new OrbitControls(camera, renderer.domElement);
@@ -228,6 +236,57 @@ void main()
         ],
       });
     },
+    creatRunLine(){
+          this.runline1 = new RunLine({
+        img: 'z1.png',
+        camera: camera,
+        height: 1400,
+        v0: new THREE.Vector3(-421, 439, -2729),
+        v1: new THREE.Vector3(672, 486, 627),
+        el: document.getElementById('scence'),
+        scene: scene,
+        speed: 1,
+        lineWidth: 120,
+        type: 'run',
+      });
+      this.runline2 = new RunLine({
+        img: 'z_112.png',
+        camera: camera,
+        height: 1400,
+        v0: new THREE.Vector3(-2322, 949, 1353),
+        v1: new THREE.Vector3(672, 486, 627),
+        el: document.getElementById('scence'),
+        scene: scene,
+        speed: 1,
+        lineWidth: 120,
+        type: 'run',
+      });
+      this.runline3 = new RunLine({
+        img: 'z_11.png',
+        camera: camera,
+        height: 1400,
+        v0: new THREE.Vector3(4100, 1025, 349),
+        v1: new THREE.Vector3(672, 486, 627),
+        el: document.getElementById('scence'),
+        scene: scene,
+        speed: 1,
+        lineWidth: 120,
+        type: 'run',
+      });
+      this.runline5 = new RunLine({
+        img: 'n.png',
+        camera: camera,
+        height: 1400,
+        v0: new THREE.Vector3(-340, 1209, 4064),
+        v1: new THREE.Vector3(-3502, 211, 3412),
+        el: document.getElementById('scence'),
+        scene: scene,
+        speed: 1,
+        lineWidth: 120,
+        type: 'run',
+      });
+  
+    }
   },
   data() {
     return {
