@@ -17,11 +17,12 @@ export default {
   mounted() {
     this.init();
     this.createControls();
-    // this.addGLTF();
+    this.addGLTF();
     this.render();
-    // this.creatWall();
+    this.creatWall();
     // this.creatRing();
     this.creatRunLine();
+    window.addEventListener("click", this.onDocumentMouseDown);
   },
   methods: {
     init() {
@@ -236,57 +237,77 @@ void main()
         ],
       });
     },
-    creatRunLine(){
-          this.runline1 = new RunLine({
-        img: 'z1.png',
+    creatRunLine() {
+      this.runline1 = new RunLine({
+        img: "z1.png",
         camera: camera,
-        height: 1400,
-        v0: new THREE.Vector3(-421, 439, -2729),
-        v1: new THREE.Vector3(672, 486, 627),
-        el: document.getElementById('scence'),
+        height: 140,
+        v0: new THREE.Vector3(60, 18, -279),
+        v1: new THREE.Vector3(-17.5, 111.5, -23),
+        el: document.getElementById("scene"),
         scene: scene,
         speed: 1,
-        lineWidth: 120,
-        type: 'run',
+        lineWidth: 40,
+        type: "run",
       });
       this.runline2 = new RunLine({
-        img: 'z_112.png',
+        img: "z_112.png",
         camera: camera,
-        height: 1400,
-        v0: new THREE.Vector3(-2322, 949, 1353),
-        v1: new THREE.Vector3(672, 486, 627),
-        el: document.getElementById('scence'),
+        height: 140,
+        v0: new THREE.Vector3(-113, 44, 666),
+        v1: new THREE.Vector3(-17.5, 111.5, -23),
+        el: document.getElementById("scene"),
         scene: scene,
         speed: 1,
-        lineWidth: 120,
-        type: 'run',
+        lineWidth: 40,
+        type: "run",
       });
       this.runline3 = new RunLine({
-        img: 'z_11.png',
+        img: "z_11.png",
         camera: camera,
-        height: 1400,
-        v0: new THREE.Vector3(4100, 1025, 349),
-        v1: new THREE.Vector3(672, 486, 627),
-        el: document.getElementById('scence'),
+        height: 140,
+        v0: new THREE.Vector3(-418, 113, -12),
+        v1: new THREE.Vector3(-17.5, 111.5, -23),
+        el: document.getElementById("scene"),
         scene: scene,
         speed: 1,
-        lineWidth: 120,
-        type: 'run',
+        lineWidth: 40,
+        type: "run",
       });
       this.runline5 = new RunLine({
-        img: 'n.png',
+        img: "n.png",
         camera: camera,
-        height: 1400,
-        v0: new THREE.Vector3(-340, 1209, 4064),
-        v1: new THREE.Vector3(-3502, 211, 3412),
-        el: document.getElementById('scence'),
+        height: 140,
+        v0: new THREE.Vector3(614, 18, 130),
+        v1: new THREE.Vector3(-17.5, 111.5, -23),
+        el: document.getElementById("scene"),
         scene: scene,
         speed: 1,
-        lineWidth: 120,
-        type: 'run',
+        lineWidth: 40,
+        type: "run",
       });
-  
-    }
+    },
+       onDocumentMouseDown(event) {
+      event.preventDefault();
+      const vector = new THREE.Vector3(); // 三维坐标对象
+      vector.set(
+        (event.clientX / window.innerWidth) * 2 - 1,
+        -(event.clientY / window.innerHeight) * 2 + 1,
+        0.5,
+      );
+      vector.unproject(camera);
+      const raycaster = new THREE.Raycaster(
+        camera.position,
+        vector.sub(camera.position).normalize(),
+      );
+      const intersects = raycaster.intersectObjects(scene.children);
+      if (intersects.length > 0) {
+        const selected = intersects[0]; // 取第一个物体
+        console.log(`x坐标:${selected.point.x}`);
+        console.log(`y坐标:${selected.point.y}`);
+        console.log(`z坐标:${selected.point.z}`);
+      }
+    },
   },
   data() {
     return {
