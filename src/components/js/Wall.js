@@ -24,7 +24,6 @@ class Wall {
   CreatRing() {
     const vertexShader = `
 uniform vec3 u_color;
-
 uniform float time;
 uniform float u_height;
  

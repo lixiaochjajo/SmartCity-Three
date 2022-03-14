@@ -3,7 +3,7 @@
 </template>
 
 <script>
-import scene from './components/scene.vue'
+import scene from './components/mapbox.vue'
 
 export default {
   name: 'App',
