@@ -42,7 +42,6 @@ export default {
       });
     },
     setCustomLayer() {
-      console.log(this);
       const customLayer = {
         id: "3d-model",
         type: "custom",
@@ -297,7 +296,7 @@ void main()
         },
         speed: 0.5,
         color: "#efad35",
-        opacity:1.0,
+        opacity: 1.0,
         radius: 420,
         height: 120,
         renderOrder: 5,
@@ -338,7 +337,7 @@ void main()
         height: 140,
         v0: new THREE.Vector3(-113, 44, 666),
         v1: new THREE.Vector3(-17.5, 111.5, -23),
-       el: document.getElementById("map"),
+        el: document.getElementById("map"),
         scene: scene,
         speed: 1,
         lineWidth: 40,
@@ -350,7 +349,7 @@ void main()
         height: 140,
         v0: new THREE.Vector3(-418, 113, -12),
         v1: new THREE.Vector3(-17.5, 111.5, -23),
-          el: document.getElementById("map"),
+        el: document.getElementById("map"),
         scene: scene,
         speed: 1,
         lineWidth: 40,
@@ -415,5 +414,11 @@ void main()
   top: 0;
   bottom: 0;
   width: 100%;
+   height: 100%;
+   overflow-y:hidden;
+      overflow-x:hidden;
+}
+.mapboxgl-ctrl {
+    display: none !important;
 }
 </style>
